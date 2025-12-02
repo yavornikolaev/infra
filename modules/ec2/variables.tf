@@ -46,6 +46,10 @@ variable "name_prefix" {
   default = "ec2"
 }
 
+output "ssh_user" {
+  value = "ubuntu"
+}
+
 variable "tags" {
   type    = map(string)
   default = {}

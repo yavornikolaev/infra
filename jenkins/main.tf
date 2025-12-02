@@ -26,14 +26,21 @@ data "aws_ami" "ubuntu" {
 module "vpc" {
   source = "../modules/vpc"
 
-  name = "demo"
+  name = "jenkins-vpc"
 }
 
-resource "aws_security_group" "ssh" {
-  name   = "allow-ssh"
+resource "aws_security_group" "jenkins_sg" {
+  name   = "jenkins-sg"
   vpc_id = module.vpc.vpc_id
 
   ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -48,17 +55,17 @@ resource "aws_security_group" "ssh" {
   }
 
   tags = {
-    Name = "allow-ssh"
+    Name = "jenkins-sg"
   }
 }
 
-module "public_ec2" {
+module "jenkins" {
   source = "../modules/ec2"
 
   instance_count      = 1
   instance_type       = "t2.micro"
   ami_id              = data.aws_ami.ubuntu.id
-  key_name            = "yavor-ec2"      
+  key_name            = var_key_name    
  
   subnet_id           = module.vpc.public_subnet_id
   security_group_ids  = [aws_security_group.ssh.id]
@@ -72,7 +79,7 @@ module "public_ec2" {
     echo "Hello from Terraform!" > /tmp/test.txt
   EOF
 
-  name_prefix = "public-ec2"
+  name_prefix = "jenkins"
   tags = {
     Environment = "Test"
     Owner       = "DevOps"
