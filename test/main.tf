@@ -23,35 +23,21 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-# Create a simple VPC + Subnet for testing (optional)
-resource "aws_vpc" "test_vpc" {
-  cidr_block = "10.10.0.0/16"
-  tags = {
-    Name = "test-vpc"
-  }
+module "vpc" {
+  source = "../modules/vpc"
+
+  name = "demo"
 }
 
-resource "aws_subnet" "test_subnet" {
-  vpc_id                  = aws_vpc.test_vpc.id
-  cidr_block              = "10.10.1.0/24"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = "test-public-subnet"
-  }
-}
-
-resource "aws_security_group" "test_sg" {
-  name        = "test-ec2-sg"
-  description = "Allow SSH for testing"
-  vpc_id      = aws_vpc.test_vpc.id
+resource "aws_security_group" "ssh" {
+  name   = "allow-ssh"
+  vpc_id = module.vpc.vpc_id
 
   ingress {
-    description = "SSH"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] # Allow SSH from anywhere (test environment)
   }
 
   egress {
@@ -60,22 +46,23 @@ resource "aws_security_group" "test_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "allow-ssh"
+  }
 }
 
-# ───────────────────────────────────────────────
-# Call your EC2 MODULE
-# ───────────────────────────────────────────────
-module "test_ec2" {
+module "public_ec2" {
   source = "../modules/ec2"
 
   instance_count      = 1
-  instance_type       = "t3.micro"
+  instance_type       = "t2.micro"
   ami_id              = data.aws_ami.ubuntu.id
-  key_name            = "yavor-ec2"          # use your real SSH key here
+  key_name            = "yavor-ec2"      
+ 
+  subnet_id           = module.vpc.public_subnet_id
+  security_group_ids  = [aws_security_group.ssh.id]
   associate_public_ip = true
-
-  subnet_id           = aws_subnet.test_subnet.id
-  security_group_ids  = [aws_security_group.test_sg.id]
 
   root_volume_size    = 8
   root_volume_type    = "gp3"
@@ -85,7 +72,7 @@ module "test_ec2" {
     echo "Hello from Terraform!" > /tmp/test.txt
   EOF
 
-  name_prefix = "test-ec2"
+  name_prefix = "public-ec2"
   tags = {
     Environment = "Test"
     Owner       = "DevOps"
