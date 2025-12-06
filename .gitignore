@@ -1,85 +1,55 @@
-#######################################
-# Terraform Core
-#######################################
-# Local Terraform state
+# -----------------------------------------------------------------------------
+# Terraform state files (do NOT commit)
+# -----------------------------------------------------------------------------
+terraform.tfstate
+terraform.tfstate.backup
 *.tfstate
 *.tfstate.*
 
-# Crash log files
+# Local .terraform directories
+.terraform/
+.terraform.lock.hcl
+
+# -----------------------------------------------------------------------------
+# Terraform plan files (binary, never commit)
+# -----------------------------------------------------------------------------
+*.tfplan
+tfplan
+
+# -----------------------------------------------------------------------------
+# Terraform crash logs
+# -----------------------------------------------------------------------------
 crash.log
 crash.*.log
 
-# Local override files (personal/dev only)
+# -----------------------------------------------------------------------------
+# Local variable files (may contain sensitive data)
+# -----------------------------------------------------------------------------
+*.tfvars
+*.tfvars.json
+
+# If you keep a personal override file
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Cached modules and plugins
-.terraform/
-.terraform.lock.hcl
+# -----------------------------------------------------------------------------
+# Sensitive output files (optional)
+# -----------------------------------------------------------------------------
+secret.txt
+*.pem
+*.key
 
-#######################################
-# Sensitive Files
-#######################################
-# Variable files that may contain secrets
-*.tfvars
-*.tfvars.json
-
-# Local environment files
-*.env
-.env.*
-
-# AWS credentials (never commit!)
-.aws/
-credentials
-config
-
-#######################################
-# OS / Editor / IDE Files
-#######################################
-# macOS
-.DS_Store
-
-# Windows
-Thumbs.db
-
-# VS Code
+# -----------------------------------------------------------------------------
+# VS Code / IDE
+# -----------------------------------------------------------------------------
 .vscode/
+.idea/
+*.iml
 
-# Linux temp
-*~
-*.swp
-*.swo
-
-#######################################
-# Logs / Outputs
-#######################################
-*.log
-logs/
-
-#######################################
-# Other DevOps Tools
-#######################################
-# Helm
-charts/*/charts
-charts/*/tmp
-
-# Kubernetes manifests generated
-*.generated.yaml
-
-# Ansible
-*.retry
-
-#######################################
-# Python virtual env (if scripts included)
-#######################################
-venv/
-.env/
-
-#######################################
-# Terraform Test Fixtures
-#######################################
-test/.terraform/
-test/*.tfstate
-test/*.tfstate.*
+# -----------------------------------------------------------------------------
+# OS-generated files
+# -----------------------------------------------------------------------------
+.DS_Store
+Thumbs.db

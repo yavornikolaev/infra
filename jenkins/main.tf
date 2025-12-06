@@ -60,15 +60,15 @@ ingress {
 }
 
 module "jenkins" {
-  source = "../modules/ec2"
+  source = "../modules/ec2" 
 
   instance_count      = 1
   instance_type       = "t2.micro"
   ami_id              = data.aws_ami.ubuntu.id
-  key_name            = var_key_name    
+  key_name            = "yavor-key"
  
   subnet_id           = module.vpc.public_subnet_id
-  security_group_ids  = [aws_security_group.ssh.id]
+  security_group_ids  = [aws_security_group.jenkins_sg.id]
   associate_public_ip = true
 
   root_volume_size    = 8
@@ -81,7 +81,7 @@ module "jenkins" {
 
   name_prefix = "jenkins"
   tags = {
-    Environment = "Test"
+    Environment = "dev"
     Owner       = "DevOps"
   }
 }

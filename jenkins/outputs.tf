@@ -1,5 +1,7 @@
-output "jenkins_public_ip" {
-  value = aws_instance.jenkins.public_ip
+# Public IPs
+output "public_ips" {
+  description = "Public IP addresses of the EC2 instances"
+  value       = module.jenkins.public_ips
 }
 
 output "ssh_user" {
