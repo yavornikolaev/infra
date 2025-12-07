@@ -6,7 +6,7 @@ terraform {
       version = "~> 5.0"
     }
   }
-}
+} 
 
 provider "aws" {
   region = "eu-central-1"
@@ -42,7 +42,7 @@ resource "aws_security_group" "ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] 
   }
 
   egress {
@@ -60,26 +60,26 @@ resource "aws_security_group" "ssh" {
 module "public_ec2" {
   source = "../modules/ec2"
 
-  instance_count        = 1
-  instance_type         = "t2.micro"
+  instance_count      = 1
+  instance_type       = "t2.micro"
   instance_profile_name = module.iam_ssm.instance_profile_name
-  ami_id                = data.aws_ami.ubuntu.id
-  key_name              = "yavor-ec2"
+  ami_id              = data.aws_ami.ubuntu.id
+  key_name            = "yavor-ec2"      
 
-
+ 
   subnet_id           = module.vpc.public_subnet_id
   security_group_ids  = [aws_security_group.ssh.id]
   associate_public_ip = true
 
-  root_volume_size = 8
-  root_volume_type = "gp3"
+  root_volume_size    = 8
+  root_volume_type    = "gp3"
 
   user_data = <<-EOF
     #!/bin/bash
     echo "Hello from Terraform!" > /tmp/test.txt
   EOF
 
-  name_prefix = "public-ec2"
+  name_prefix = " public-ec2"
   tags = {
     Environment = "test"
     Owner       = "devops"

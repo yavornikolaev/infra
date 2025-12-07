@@ -1,13 +1,21 @@
+# List of EC2 instance IDs
+output "instance_ids" {
+  description = "IDs of the created EC2 instances"
+  value       = module.ec2.instance_ids
+}
+
 # Public IPs
 output "public_ips" {
   description = "Public IP addresses of the EC2 instances"
-  value       = module.jenkins.public_ips
+  value       = module.ec2.public_ips
 }
 
-output "ssh_user" {
-  value = "ec2-user"
+# Private IPs
+output "private_ips" {
+  description = "Private IP addresses of the EC2 instances"
+  value       = module.ec2.private_ips
 }
 
-output "ssh_private_key_path" {
-  value = pathexpand("~/.ssh/aws_key.pem")
+output "vpc_id" {
+  value = module.vpc.vpc_id
 }

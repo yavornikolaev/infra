@@ -6,8 +6,11 @@ variable "instance_type" {
   type = string
 }
 
+
 variable "ami_id" {
-  type = string
+  type        = string
+  default     = ""
+  description = "Override AMI ID. If empty, module will use latest Ubuntu AMI."
 }
 
 variable "key_name" {
