@@ -2,7 +2,7 @@ resource "aws_instance" "ec2" {
   count         = var.instance_count
   ami           = var.ami_id
   instance_type = var.instance_type
-
+  iam_instance_profile = var.instance_profile_name
   key_name = var.key_name
 
   associate_public_ip_address = var.associate_public_ip

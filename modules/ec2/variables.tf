@@ -14,6 +14,10 @@ variable "key_name" {
   type = string
 }
 
+variable "instance_profile_name" {
+  type = string
+}
+
 variable "associate_public_ip" {
   type    = bool
   default = true

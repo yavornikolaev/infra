@@ -29,6 +29,11 @@ module "vpc" {
   name = "demo"
 }
 
+module "iam_ssm" {
+  source    = "../modules/iam"
+  role_name = "demo-ssm-role"
+}
+
 resource "aws_security_group" "ssh" {
   name   = "allow-ssh"
   vpc_id = module.vpc.vpc_id
@@ -37,7 +42,7 @@ resource "aws_security_group" "ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -55,17 +60,19 @@ resource "aws_security_group" "ssh" {
 module "public_ec2" {
   source = "../modules/ec2"
 
-  instance_count      = 1
-  instance_type       = "t2.micro"
-  ami_id              = data.aws_ami.ubuntu.id
-  key_name            = "yavor-ec2"      
- 
+  instance_count        = 1
+  instance_type         = "t2.micro"
+  instance_profile_name = module.iam_ssm.instance_profile_name
+  ami_id                = data.aws_ami.ubuntu.id
+  key_name              = "yavor-ec2"
+
+
   subnet_id           = module.vpc.public_subnet_id
   security_group_ids  = [aws_security_group.ssh.id]
   associate_public_ip = true
 
-  root_volume_size    = 8
-  root_volume_type    = "gp3"
+  root_volume_size = 8
+  root_volume_type = "gp3"
 
   user_data = <<-EOF
     #!/bin/bash
@@ -74,7 +81,7 @@ module "public_ec2" {
 
   name_prefix = "public-ec2"
   tags = {
-    Environment = "Test"
-    Owner       = "DevOps"
+    Environment = "test"
+    Owner       = "devops"
   }
 }
