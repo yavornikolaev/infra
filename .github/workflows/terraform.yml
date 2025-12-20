@@ -68,7 +68,7 @@ jobs:
 
       # 🚀 APPLY — само при merge в main
       - name: Terraform Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           cd envs/dev
           terraform apply -auto-approve -input=false
