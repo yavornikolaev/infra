@@ -25,6 +25,9 @@ jobs:
           role-to-assume: arn:aws:iam::961341514666:role/ci-cd
           aws-region: eu-central-1
 
+      - name: Who am I (OIDC debug)
+        run: aws sts get-caller-identity
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -50,7 +53,7 @@ jobs:
         run: |
           cd envs/dev
           terraform plan -no-color -input=false
-          
+
       # 💬 PR comment (без stdout – по-безопасно)
       - name: Comment PR
         if: github.event_name == 'pull_request'
