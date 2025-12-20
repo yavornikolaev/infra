@@ -1,9 +1,7 @@
 locals {
-  env = "dev"
-
   tags = {
-    Environment = local.env
-    Project     = "infra"
+    Environment = "dev"
     ManagedBy   = "terraform"
+    Owner       = "yavor"
   }
 }
