@@ -1,0 +1,50 @@
+name: 'Terraform'
+
+on:
+  pull_request:
+  push:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    environment: dev
+
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform Init
+      run: | 
+        cd envs/dev 
+        terraform init -input=false
+
+
+    - name: Terraform Format
+      run: |           
+        cd envs/dev
+        terraform fmt -check -recursive
+    
+    - name: Terraform Validate
+      run: |
+        cd envs/dev
+        terraform validate
+
+    - name: Terraform Plan
+      run: |
+        cd envs/dev
+        terraform plan -input=false
