@@ -8,7 +8,7 @@ module "vpc" {
   private_subnet_cidrs = ["10.10.101.0/24", "10.10.102.0/24"]
   availability_zones   = ["eu-central-1a", "eu-central-1b"]
 
-  ####test triger IMPORTANT: disabled NAT for reduce
+  ##IMPORTANT: disabled NAT for reduce
   enable_nat_gateway = false
 
   tags = local.tags
