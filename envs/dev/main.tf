@@ -63,3 +63,20 @@ module "ec2" {
 
   tags = local.tags
 }
+
+module "ec2" {
+  source                = "../../modules/ec2"
+  name_prefix           = "${local.env}-test"
+  instance_count        = 1
+  instance_type         = "t2.micro"
+  instance_profile_name = module.ec2_iam.instance_profile_name
+
+  subnet_id = module.vpc.public_subnet_ids[0]
+
+  security_group_ids = [module.ec2_sg.security_group_id]
+  key_name           = null
+  root_volume_size   = 8
+  # user_data = file("${path.module}/user-data/cloud-init.sh")
+
+  tags = local.tags
+}
