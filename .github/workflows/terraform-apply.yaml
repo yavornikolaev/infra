@@ -32,9 +32,12 @@ jobs:
       - name: Download plan artifact
         uses: actions/download-artifact@v4
         with:
-          name: tf.plan
-          path: envs/dev/tf.plan
-
+          name: terraform-plan
+          path: envs/dev
+          
+      - name: List downloaded files
+        run: ls -l envs/dev
+        
       - name: Terraform Apply
         run: |
           cd envs/dev
