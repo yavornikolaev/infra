@@ -51,36 +51,41 @@ jobs:
         if: github.event_name == 'pull_request'      
         run: |
           cd envs/dev
-          terraform plan -no-color -input=false
+          terraform plan -input=false -out=tfplan
         continue-on-error: true
 
-      - name: Comment Plan on PR
+      - name: Terraform Show Plan
+        id: show
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+        run: |
+          cd envs/dev
+          terraform show -no-color tfplan > plan.txt
 
-            <details><summary>Show Plan</summary>
+          echo "stdout<<EOF" >> $GITHUB_OUTPUT
+          cat plan.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-            \`\`\`terraform
-            ${{ steps.plan.outputs.stdout }}
-            \`\`\`
-
-            </details>
-
-            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+          - name: Comment Plan on PR
+            if: github.event_name == 'pull_request'
+            uses: actions/github-script@v7
+            with:
+              script: |
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: `
+          ### Terraform Plan 📖
+          
+          <details><summary>Show Plan</summary>
+          
+          \`\`\`terraform
+          ${{ steps.show.outputs.stdout }}
+          \`\`\`
+          
+          </details>
+          `
+                });
 
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
