@@ -8,7 +8,6 @@ terraform.tfstate.backup
 
 # Local .terraform directories
 .terraform/
-.terraform.lock.hcl
 
 # -----------------------------------------------------------------------------
 # Terraform plan files (binary, never commit)
