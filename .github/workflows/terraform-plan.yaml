@@ -41,7 +41,7 @@ jobs:
       - name: Upload plan artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tf-plan
+          name: terraform-plan
           path: envs/dev/tf.plan
 
       - name: Show plan (text)
