@@ -1,7 +1,14 @@
 output "instance_profile_name" {
-  value = aws_iam_instance_profile.ssm_instance_profile.name
+  description = "Instance profile name to attach to EC2"
+  value       = aws_iam_instance_profile.this.name
 }
 
 output "role_name" {
-  value = aws_iam_role.ssm_role.name
+  description = "IAM role name"
+  value       = aws_iam_role.this.name
+}
+
+output "role_arn" {
+  description = "IAM role ARN"
+  value       = aws_iam_role.this.arn
 }

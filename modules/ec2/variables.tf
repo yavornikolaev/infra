@@ -1,63 +1,70 @@
 variable "instance_count" {
-  type = number
+  description = "Number of EC2 instances"
+  type        = number
+  default     = 1
 }
 
 variable "instance_type" {
-  type = string
+  description = "EC2 instance type"
+  type        = string
 }
-
 
 variable "ami_id" {
+  description = "Optional AMI ID override"
   type        = string
   default     = ""
-  description = "Override AMI ID. If empty, module will use latest Ubuntu AMI."
-}
-
-variable "key_name" {
-  type = string
 }
 
 variable "instance_profile_name" {
-  type = string
+  description = "IAM instance profile name (SSM role)"
+  type        = string
+}
+
+
+variable "key_name" {
+  description = "SSH key name (optional, can be null when using SSM)"
+  type        = string
+  default     = null
 }
 
 variable "associate_public_ip" {
-  type    = bool
-  default = true
+  description = "Associate public IP address (true for Free Tier)"
+  type        = bool
+  default     = true
 }
 
 variable "security_group_ids" {
-  type = list(string)
+  description = "List of security group IDs"
+  type        = list(string)
 }
+
 
 variable "subnet_id" {
-  type = string
-}
-
-variable "user_data" {
-  type    = string
-  default = ""
+  description = "Subnet ID where EC2 will be launched"
+  type        = string
 }
 
 variable "root_volume_size" {
-  type = number
+  description = "Root EBS volume size (GB)"
+  type        = number
+  default     = 8 # Free Tier default
 }
 
-variable "root_volume_type" {
-  type    = string
-  default = "gp3"
+variable "user_data" {
+  description = "Optional cloud-init user data"
+  type        = string
+  default     = null
 }
+
 
 variable "name_prefix" {
-  type    = string
-  default = "ec2"
+  description = "Name prefix for EC2 instances"
+  type        = string
 }
 
-output "ssh_user" {
-  value = "ubuntu"
-}
 
 variable "tags" {
-  type    = map(string)
-  default = {}
+  description = "Tags applied to EC2 instances"
+  type        = map(string)
+  default     = {}
 }

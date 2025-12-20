@@ -1,5 +1,5 @@
-resource "aws_security_group" "web_sg" {
-  name        = "${var.name}-web-sg"
+resource "aws_security_group" "this" {
+  name        = "${var.name}-sg"
   description = "Managed Security Group for ${var.name}"
   vpc_id      = var.vpc_id
 
@@ -14,11 +14,25 @@ resource "aws_security_group" "web_sg" {
     }
   }
 
-  # As before: open all outbound
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "egress" {
+    for_each = var.egress_rules
+    content {
+      from_port   = egress.value.from_port
+      to_port     = egress.value.to_port
+      protocol    = egress.value.protocol
+      cidr_blocks = egress.value.cidr_blocks
+      description = lookup(egress.value, "description", null)
+    }
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.name}-sg"
+    }
+  )
+
+    lifecycle {
+    create_before_destroy = true
   }
 }
