@@ -72,16 +72,16 @@ jobs:
             const plan = `${{ steps.show.outputs.plan }}`;
             const body = `
             ## Terraform Plan 🧾
-            
+
             <details>
             <summary>Show Plan (first 200 lines)</summary>
-            
+
             \`\`\`terraform
             ${plan}
             \`\`\`
-            
+
             </details>
-            
+
             *Plan truncated to 200 lines for clarity.*
             `;
                         github.rest.issues.createComment({
@@ -116,9 +116,9 @@ jobs:
           name: terraform-plan
           path: envs/dev
 
-      - name: Show downloaded files for debug
-        run: ls -l envs/dev
-
+      - name: Terraform Init
+        run: cd envs/dev && terraform init -input=false
+        
       - name: Terraform Apply
         run: |
           cd envs/dev
