@@ -45,7 +45,6 @@ jobs:
           cd envs/dev
           terraform validate
 
-      # 🔍 PLAN — само за PR
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
