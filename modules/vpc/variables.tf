@@ -27,7 +27,7 @@ variable "availability_zones" {
 variable "enable_nat_gateway" {
   description = "Enable NAT Gateway for private subnets (NOT free-tier)"
   type        = bool
-  default     = false # Change to true if NAT Gateway is needed
+  default     = false 
 }
 
 variable "tags" {

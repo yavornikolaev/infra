@@ -19,7 +19,6 @@ jobs:
   plan:
     runs-on: ubuntu-latest
     outputs:
-      # Запазваме имението на артефакт (не е задължително, но е good practice)
       plan-artifact-name: terraform-plan
 
     steps:
@@ -63,7 +62,7 @@ jobs:
           echo "plan<<EOF" >> $GITHUB_OUTPUT
           cat plan_preview.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
+## Comment plan on PR
       - name: Comment plan on PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7

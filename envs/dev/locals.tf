@@ -3,7 +3,7 @@ locals {
 
   tags = {
     Environment = local.env
+    Project     = "infra"
     ManagedBy   = "terraform"
   }
 }
-###test string##########21212 #
