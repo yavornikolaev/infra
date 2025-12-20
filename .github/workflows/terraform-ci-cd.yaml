@@ -71,27 +71,27 @@ jobs:
           script: |
             const plan = `${{ steps.show.outputs.plan }}`;
             const body = `
-## Terraform Plan 🧾
-
-<details>
-<summary>Show Plan (first 200 lines)</summary>
-
-\`\`\`terraform
-${plan}
-\`\`\`
-
-</details>
-
-*Plan truncated to 200 lines for clarity.*
-`;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
-
-  apply:
+             ## Terraform Plan 🧾
+             
+             <details>
+             <summary>Show Plan (first 200 lines)</summary>
+             
+             \`\`\`terraform
+             ${plan}
+             \`\`\`
+             
+             </details>
+             
+             *Plan truncated to 200 lines for clarity.*
+             `;
+                         github.rest.issues.createComment({
+                           issue_number: context.issue.number,
+                           owner: context.repo.owner,
+                           repo: context.repo.repo,
+                           body: body
+                         });
+  
+    apply:
     runs-on: ubuntu-latest
     needs: plan
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
