@@ -4,7 +4,7 @@ on:
   pull_request:
     paths: ['**.tf', '**.tfvars']
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 permissions:
   id-token: write
@@ -66,7 +66,7 @@ jobs:
               body: "Terraform plan executed. Check Actions logs for full output."
             })
 
-      # 🚀 APPLY — само при merge в main
+      # 🚀 APPLY — само при merge в master
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
