@@ -1,0 +1,98 @@
+name: Terraform CI/CD
+
+on:
+  pull_request:
+    paths: ['**.tf', '**.tfvars']
+  push:
+    branches: [ master ]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::961341514666:role/ci-cd
+          aws-region: eu-central-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: |
+          cd envs/dev
+          terraform init -input=false
+
+      - name: Terraform Format
+        run: |
+          cd envs/dev
+          terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        run: |
+          cd envs/dev
+          terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        if: github.event_name == 'pull_request'      
+        run: |
+          cd envs/dev
+          terraform plan -input=false -out=tf.plan
+        continue-on-error: true
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tf-plan
+          path: envs/dev/tf.plan
+
+
+      - name: Show plan to file
+        run: |
+          cd envs/dev
+          terraform show -no-color tf.plan > plan.txt
+
+      - name: Comment Plan on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `
+      ### Terraform Plan 📖
+        
+      <details><summary>Show Plan</summary>
+        
+      \`\`\`terraform
+      ${{ steps.show.outputs.plan }}
+      \`\`\`
+        
+      </details>
+      `;
+        
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+        
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+  
+      - name: Terraform Apply
+        id: apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          cd envs/dev
+          terraform apply -auto-approve -no-color tfplan 
