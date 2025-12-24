@@ -2,8 +2,6 @@ name: Terraform CI/CD
 
 on:
   pull_request:
-    branches:
-      - master
     paths: ['**.tf', '**.tfvars']
   push:
     branches:
@@ -21,8 +19,7 @@ jobs:
   plan:
     runs-on: ubuntu-latest
     outputs:
-      plan-artifact-name: terraform-plan
-
+      plan-output: ${{ steps.show.outputs.plan }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -59,49 +56,44 @@ jobs:
         run: |
           cd envs/dev
           terraform show -no-color tf.plan > plan.txt
-          # Limit the plan size so GitHub output won't hit limits
           head -n 200 plan.txt > plan_preview.txt
           echo "plan<<EOF" >> $GITHUB_OUTPUT
           cat plan_preview.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-      ## Comment plan on PR
+
       - name: Comment plan on PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         env:
-          # Use an environment variable to pass the plan safely
-          PLAN_OUTPUT: ${{ steps.show.outputs.plan }}
+          PLAN: ${{ steps.show.outputs.plan }}
         with:
           script: |
-            // Access the plan via process.env instead of ${{ }}
-            const plan = process.env.PLAN_OUTPUT;
-            
+            const plan = process.env.PLAN;
             const body = `## Terraform Plan 🧾
-
+            
             <details>
             <summary>Show Plan (first 200 lines)</summary>
-
+            
             \`\`\`terraform
             ${plan}
             \`\`\`
-
+            
             </details>
-
+            
             *Plan truncated to 200 lines for clarity.*`;
-
+            
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: body
-            });
+            })
 
   apply:
     runs-on: ubuntu-latest
     needs: plan
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     environment: dev
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -123,21 +115,18 @@ jobs:
 
       - name: Terraform Init
         run: cd envs/dev && terraform init -input=false
-        
+              
       - name: Terraform Apply
         run: |
           cd envs/dev
           terraform apply -input=false -auto-approve tf.plan
 
-      # NEW STEP: Generate JSON for Ansible
       - name: Export Terraform Outputs
-        id: tf-outputs
         run: |
           cd envs/dev
           terraform output -json > tf_outputs.json
 
-      # NEW STEP: Upload for Ansible job
-      - name: Upload TF Outputs
+      - name: Upload TF Outputs for Ansible
         uses: actions/upload-artifact@v4
         with:
           name: terraform-outputs
