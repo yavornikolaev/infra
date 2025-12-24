@@ -59,7 +59,7 @@ module "ec2" {
   security_group_ids = [module.ec2_sg.security_group_id]
   key_name           = null
   root_volume_size   = 8
-  # user_data = file("${path.module}/user-data/cloud-init.sh")
+  ## user_data = file("${path.module}/user-data/cloud-init.sh")
 
   tags = local.tags
 }
