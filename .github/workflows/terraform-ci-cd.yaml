@@ -2,6 +2,8 @@ name: Terraform CI/CD
 
 on:
   pull_request:
+    branches:
+      - master
     paths: ['**.tf', '**.tfvars']
   push:
     branches:
@@ -62,15 +64,19 @@ jobs:
           echo "plan<<EOF" >> $GITHUB_OUTPUT
           cat plan_preview.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-## Comment plan on PR
+      ## Comment plan on PR
       - name: Comment plan on PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
+        env:
+          # Use an environment variable to pass the plan safely
+          PLAN_OUTPUT: ${{ steps.show.outputs.plan }}
         with:
           script: |
-            const plan = `${{ steps.show.outputs.plan }}`;
-            const body = `
-            ## Terraform Plan 🧾
+            // Access the plan via process.env instead of ${{ }}
+            const plan = process.env.PLAN_OUTPUT;
+            
+            const body = `## Terraform Plan 🧾
 
             <details>
             <summary>Show Plan (first 200 lines)</summary>
@@ -81,14 +87,14 @@ jobs:
 
             </details>
 
-            *Plan truncated to 200 lines for clarity.*
-            `;
-                        github.rest.issues.createComment({
-                          issue_number: context.issue.number,
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          body: body
-                        });
+            *Plan truncated to 200 lines for clarity.*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
 
   apply:
     runs-on: ubuntu-latest
@@ -122,3 +128,17 @@ jobs:
         run: |
           cd envs/dev
           terraform apply -input=false -auto-approve tf.plan
+
+      # NEW STEP: Generate JSON for Ansible
+      - name: Export Terraform Outputs
+        id: tf-outputs
+        run: |
+          cd envs/dev
+          terraform output -json > tf_outputs.json
+
+      # NEW STEP: Upload for Ansible job
+      - name: Upload TF Outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-outputs
+          path: envs/dev/tf_outputs.json
