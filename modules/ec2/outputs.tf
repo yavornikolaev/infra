@@ -15,6 +15,10 @@ output "private_ips" {
   value       = aws_instance.ec2[*].private_ip
 }
 
+output "key_names" {
+  description = "Key names used for the EC2 instances"
+  value       = aws_instance.ec2[*].key_name
+}
 
 output "instance_arns" {
   description = "EC2 instance ARNs"
