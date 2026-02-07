@@ -63,3 +63,39 @@ module "ec2" {
 
   tags = local.tags
 }
+
+module "eks" {
+  source = "../../modules/eks"
+  name   = "eks-dev"
+
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.public_subnet_ids
+
+
+  eks_managed_node_groups = {
+    one = {
+      name           = "node-group-1"
+      ami_type       = "AL2023_x86_64_STANDARD"
+      instance_types = ["t3.micro"]
+
+      min_size     = 1
+      max_size     = 1
+      desired_size = 1
+      disk_size    = 15
+      volume_type  = "gp3"
+    }
+
+    two = {
+      name           = "node-group-2"
+      ami_type       = "AL2023_x86_64_STANDARD"
+      instance_types = ["t3.micro"]
+
+      min_size     = 1
+      max_size     = 1
+      desired_size = 1
+      disk_size    = 15
+      volume_type  = "gp3"
+    }
+  }
+}

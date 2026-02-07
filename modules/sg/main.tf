@@ -32,7 +32,7 @@ resource "aws_security_group" "this" {
     }
   )
 
-    lifecycle {
+  lifecycle {
     create_before_destroy = true
   }
 }

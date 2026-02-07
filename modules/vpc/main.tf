@@ -24,10 +24,10 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = merge(
-      var.tags,
-      { Name = "${var.name}-public-${count.index}" }
-    )
-  }
+    var.tags,
+    { Name = "${var.name}-public-${count.index}" }
+  )
+}
 
 resource "aws_subnet" "private" {
   count             = length(var.private_subnet_cidrs)
