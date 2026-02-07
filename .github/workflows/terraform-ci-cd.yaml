@@ -16,7 +16,26 @@ env:
   AWS_REGION: eu-central-1
 
 jobs:
+  pr_checks:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init (no backend)
+        run: cd envs/dev && terraform init -backend=false -input=false
+
+      - name: Terraform Fmt
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        run: cd envs/dev && terraform validate
   plan:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     outputs:
       plan-output: ${{ steps.show.outputs.plan }}
