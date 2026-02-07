@@ -121,7 +121,7 @@ Security note: Use short-lived IAM credentials (STS assume-role) or Jenkins cred
 
 ---
 
-## Next steps (I can add)
+## Next steps
 - Add an `apply` workflow with GitHub Environment manual approval
 - Add an example Ansible playbook and a GitHub Actions job that runs it after `apply`
 - Provide a sample Jenkinsfile demonstrating plan -> apply -> ansible
