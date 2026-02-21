@@ -1,7 +1,6 @@
-variable "instance_count" {
-  description = "Number of EC2 instances"
-  type        = number
-  default     = 1
+variable "instance_names" {
+  description = "Set of instance name suffixes"
+  type        = set(string)
 }
 
 variable "instance_type" {
@@ -12,7 +11,7 @@ variable "instance_type" {
 variable "ami_id" {
   description = "Optional AMI ID override"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "instance_profile_name" {
@@ -36,6 +35,7 @@ variable "associate_public_ip" {
 variable "security_group_ids" {
   description = "List of security group IDs"
   type        = list(string)
+  default     = []
 }
 
 
@@ -47,7 +47,7 @@ variable "subnet_id" {
 variable "root_volume_size" {
   description = "Root EBS volume size (GB)"
   type        = number
-  default     = 8 # Free Tier default
+  default     = 8 
 }
 
 variable "user_data" {

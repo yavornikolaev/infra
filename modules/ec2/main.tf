@@ -1,6 +1,19 @@
-resource "aws_instance" "ec2" {
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] 
 
-  count                       = var.instance_count
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+}
+
+locals {
+  ami_id = var.ami_id != null ? var.ami_id : data.aws_ami.ubuntu.id
+}
+
+resource "aws_instance" "this" {
+  for_each                    = var.instance_names
   ami                         = local.ami_id
   instance_type               = var.instance_type
   iam_instance_profile        = var.instance_profile_name
@@ -19,7 +32,7 @@ resource "aws_instance" "ec2" {
   tags = merge(
     var.tags,
     {
-      Name = "${var.name_prefix}-${count.index + 1}"
+      Name = "${var.name_prefix}-${each.value}"
     }
   )
 }

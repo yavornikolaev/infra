@@ -6,6 +6,7 @@ terraform.tfstate.backup
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl
+backend.tf
 # Local .terraform directories
 .terraform/
 
