@@ -46,7 +46,13 @@ loki:
       cpu: 300m
       memory: 512Mi
 
+gateway:
+  enabled: false
+
 loki-canary:
+  enabled: false
+
+grafanaAgent:
   enabled: false
 
 chunksCache:
