@@ -4,6 +4,16 @@ loki:
 
   singleBinary:
     replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 512Mi
+    persistence:
+      enabled: true
+      size: 5Gi
 
   read:
     replicas: 0
@@ -14,79 +24,55 @@ loki:
   backend:
     replicas: 0
 
-  auth_enabled: false
-
-  affinity: {}
-  podAntiAffinity: {}
-
-  commonConfig:
-    replication_factor: 1
-
-  ingester:
-    lifecycler:
-      ring:
-        kvstore:
-          store: inmemory
-        replication_factor: 1
-
-  ruler:
-    enabled: false
-
-  schemaConfig:
-    configs:
-      - from: "2024-01-01"
-        store: tsdb
-        object_store: filesystem
-        schema: v13
-        index:
-          prefix: loki_index_
-          period: 24h
-
-  storage:
-    type: filesystem
-
-  persistence:
-    enabled: true
-    size: 5Gi
-
-  limits_config:
-    retention_period: 24h
-
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 300m
-      memory: 512Mi
+  loki:
+    auth_enabled: false
+    commonConfig:
+      replication_factor: 1
+    ingester:
+      lifecycler:
+        ring:
+          kvstore:
+            store: inmemory
+          replication_factor: 1
+    schemaConfig:
+      configs:
+        - from: "2024-01-01"
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: loki_index_
+            period: 24h
+    storage:
+      type: filesystem
+    limits_config:
+      retention_period: 24h
 
   gateway:
     enabled: false
 
-  lokiCanary:
-    enabled: false
-
   monitoring:
+    dashboards:
+      enabled: false
+    rules:
+      enabled: false
+    serviceMonitor:
+      enabled: false
     selfMonitoring:
       enabled: false
       grafanaAgent:
         installOperator: false
-        enabled: false
+    lokiCanary:
+      enabled: false
 
   test:
     enabled: false
-
-  grafanaAgent:
-    enabled: false
-
-  grafanaAgentOperator:
-    enabled: false
-    crds:
-      create: false
-      enabled: false
 
   chunksCache:
     enabled: false
 
   resultsCache:
+    enabled: false
+
+  ruler:
     enabled: false
