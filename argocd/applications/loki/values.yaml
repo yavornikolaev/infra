@@ -63,6 +63,9 @@ loki:
         installOperator: false
         enabled: false
 
+  test:
+    enabled: false
+
   grafanaAgent:
     enabled: false
 
