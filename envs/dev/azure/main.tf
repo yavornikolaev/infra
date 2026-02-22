@@ -68,3 +68,12 @@ module "azure_aks" {
 
   tags = local.tags
 }
+
+resource "local_file" "kubeconfig" {
+  filename = "${path.module}/kubeconfig.yaml"
+  content  = module.azure_aks.kube_config_raw
+}
+
+output "kubeconfig_path" {
+  value = local_file.kubeconfig.filename
+}

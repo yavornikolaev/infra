@@ -22,7 +22,6 @@ loki:
       cpu: 300m
       memory: 512Mi
 
-# Disable components we don't need for a tiny cluster
 loki-canary:
   enabled: false
 

@@ -1,9 +1,6 @@
 # Cost-optimized defaults. Adjust as needed.
 
 kube-prometheus-stack:
-  crds:
-    enabled: false
-
   alertmanager:
     enabled: false
 

@@ -1,21 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loki
+  name: argo-apps
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/yavornikolaev/infra.git
     targetRevision: master
-    path: apps/loki
+    path: argocd/applications
+    directory:
+      recurse: true
+      include: "*application*.yaml"
   destination:
     server: https://kubernetes.default.svc
-    namespace: logging
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true

@@ -6,7 +6,6 @@ backend:
 loki:
   host: loki.logging.svc.cluster.local
   port: 3100
-  # LogQL labels
   labels:
     job: fluent-bit
     cluster: aks-dev
@@ -22,7 +21,6 @@ resources:
     cpu: 200m
     memory: 256Mi
 
-# Reduce noise on small clusters
 filter:
   enabled: true
   kubernetes:
