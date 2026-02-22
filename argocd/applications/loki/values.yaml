@@ -1,18 +1,19 @@
-deploymentMode: SingleBinary
-
-singleBinary:
-  replicas: 1
-
-read:
-  replicas: 0
-
-write:
-  replicas: 0
-
-backend:
-  replicas: 0
-
+# Values are passed to the "loki" dependency chart.
 loki:
+  deploymentMode: SingleBinary
+
+  singleBinary:
+    replicas: 1
+
+  read:
+    replicas: 0
+
+  write:
+    replicas: 0
+
+  backend:
+    replicas: 0
+
   auth_enabled: false
 
   affinity: {}
@@ -49,17 +50,17 @@ loki:
       cpu: 300m
       memory: 512Mi
 
-gateway:
-  enabled: false
+  gateway:
+    enabled: false
 
-loki-canary:
-  enabled: false
+  lokiCanary:
+    enabled: false
 
-grafanaAgent:
-  enabled: false
+  grafanaAgent:
+    enabled: false
 
-chunksCache:
-  enabled: false
+  chunksCache:
+    enabled: false
 
-resultsCache:
-  enabled: false
+  resultsCache:
+    enabled: false
