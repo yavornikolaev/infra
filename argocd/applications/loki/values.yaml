@@ -59,6 +59,9 @@ loki:
   grafanaAgent:
     enabled: false
 
+  grafanaAgentOperator:
+    enabled: false
+
   chunksCache:
     enabled: false
 
