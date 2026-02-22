@@ -1,47 +1,48 @@
 # Minimal Fluent Bit to send Kubernetes logs to Loki
 
-serviceMonitor:
-  enabled: false
+fluent-bit:
+  serviceMonitor:
+    enabled: false
 
-resources:
-  requests:
-    cpu: 50m
-    memory: 64Mi
-  limits:
-    cpu: 200m
-    memory: 256Mi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
 
-# Fluent Bit chart uses classic mode config blocks
-config:
-  filters: |
-    [FILTER]
-        Name kubernetes
-        Match kube.*
-        Merge_Log On
-        Keep_Log Off
-        K8S-Logging.Parser On
-        K8S-Logging.Exclude On
+  # Fluent Bit chart uses classic mode config blocks
+  config:
+    filters: |
+      [FILTER]
+          Name kubernetes
+          Match kube.*
+          Merge_Log On
+          Keep_Log Off
+          K8S-Logging.Parser On
+          K8S-Logging.Exclude On
 
-    # Drop kube-system logs to save resources (optional)
-    [FILTER]
-        Name    grep
-        Match   kube.*
-        Exclude namespace_name kube-system
+      # Drop kube-system logs to save resources (optional)
+      [FILTER]
+          Name    grep
+          Match   kube.*
+          Exclude namespace_name kube-system
 
-  outputs: |
-    [OUTPUT]
-        Name        loki
-        Match       kube.*
-        Host        loki.logging.svc.cluster.local
-        Port        3100
-        Labels      job=fluent-bit,cluster=aks-dev
-        LabelKeys   $kubernetes['namespace_name'],$kubernetes['pod_name'],$kubernetes['container_name']
-        LineFormat  json
+    outputs: |
+      [OUTPUT]
+          Name        loki
+          Match       kube.*
+          Host        loki.logging.svc.cluster.local
+          Port        3100
+          Labels      job=fluent-bit,cluster=aks-dev
+          LabelKeys   $kubernetes['namespace_name'],$kubernetes['pod_name'],$kubernetes['container_name']
+          LineFormat  json
 
-    [OUTPUT]
-        Name        loki
-        Match       host.*
-        Host        loki.logging.svc.cluster.local
-        Port        3100
-        Labels      job=node,cluster=aks-dev
-        LineFormat  json
+      [OUTPUT]
+          Name        loki
+          Match       host.*
+          Host        loki.logging.svc.cluster.local
+          Port        3100
+          Labels      job=node,cluster=aks-dev
+          LineFormat  json
