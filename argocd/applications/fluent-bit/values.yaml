@@ -36,8 +36,8 @@ fluent-bit:
           Host        loki.logging.svc.cluster.local
           Port        3100
           Labels      job=fluent-bit,cluster=aks-dev
-          LabelKeys   $kubernetes['namespace_name'],$kubernetes['pod_name'],$kubernetes['container_name']
-          LineFormat  json
+          label_keys  $kubernetes['namespace_name'],$kubernetes['pod_name'],$kubernetes['container_name']
+          line_format json
 
       [OUTPUT]
           Name        loki
@@ -45,4 +45,4 @@ fluent-bit:
           Host        loki.logging.svc.cluster.local
           Port        3100
           Labels      job=node,cluster=aks-dev
-          LineFormat  json
+          line_format json
