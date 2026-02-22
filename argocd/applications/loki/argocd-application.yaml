@@ -9,6 +9,75 @@ spec:
     repoURL: https://github.com/yavornikolaev/infra.git
     targetRevision: master
     path: argocd/applications/loki
+    helm:
+      values: |
+        loki:
+          deploymentMode: SingleBinary
+          singleBinary:
+            replicas: 1
+          read:
+            replicas: 0
+          write:
+            replicas: 0
+          backend:
+            replicas: 0
+          auth_enabled: false
+          commonConfig:
+            replication_factor: 1
+          ingester:
+            lifecycler:
+              ring:
+                kvstore:
+                  store: inmemory
+                replication_factor: 1
+          schemaConfig:
+            configs:
+              - from: "2024-01-01"
+                store: tsdb
+                object_store: filesystem
+                schema: v13
+                index:
+                  prefix: loki_index_
+                  period: 24h
+          storage:
+            type: filesystem
+          persistence:
+            enabled: true
+            size: 5Gi
+          limits_config:
+            retention_period: 24h
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
+          gateway:
+            enabled: false
+          lokiCanary:
+            enabled: false
+          monitoring:
+            selfMonitoring:
+              enabled: false
+              grafanaAgent:
+                installOperator: false
+                enabled: false
+          grafanaAgent:
+            enabled: false
+          grafanaAgentOperator:
+            enabled: false
+            crds:
+              create: false
+              enabled: false
+          chunksCache:
+            enabled: false
+          resultsCache:
+            enabled: false
+          ruler:
+            enabled: false
+          test:
+            enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: logging
