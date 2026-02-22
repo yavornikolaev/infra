@@ -15,6 +15,9 @@ backend:
 loki:
   auth_enabled: false
 
+  affinity: {}
+  podAntiAffinity: {}
+
   commonConfig:
     replication_factor: 1
 
