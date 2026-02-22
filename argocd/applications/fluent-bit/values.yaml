@@ -1,15 +1,5 @@
 # Minimal Fluent Bit to send Kubernetes logs to Loki
 
-backend:
-  type: loki
-
-loki:
-  host: loki.logging.svc.cluster.local
-  port: 3100
-  labels:
-    job: fluent-bit
-    cluster: aks-dev
-
 serviceMonitor:
   enabled: false
 
@@ -21,14 +11,37 @@ resources:
     cpu: 200m
     memory: 256Mi
 
-filter:
-  enabled: true
-  kubernetes:
-    enabled: true
+# Fluent Bit chart uses classic mode config blocks
+config:
+  filters: |
+    [FILTER]
+        Name kubernetes
+        Match kube.*
+        Merge_Log On
+        Keep_Log Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
 
-extraOutputs: |
-  # Drop kube-system logs to save resources (optional)
-  [FILTER]
-      Name    grep
-      Match   kube.*
-      Exclude namespace_name kube-system
+    # Drop kube-system logs to save resources (optional)
+    [FILTER]
+        Name    grep
+        Match   kube.*
+        Exclude namespace_name kube-system
+
+  outputs: |
+    [OUTPUT]
+        Name        loki
+        Match       kube.*
+        Host        loki.logging.svc.cluster.local
+        Port        3100
+        Labels      job=fluent-bit,cluster=aks-dev
+        LabelKeys   $kubernetes['namespace_name'],$kubernetes['pod_name'],$kubernetes['container_name']
+        LineFormat  json
+
+    [OUTPUT]
+        Name        loki
+        Match       host.*
+        Host        loki.logging.svc.cluster.local
+        Port        3100
+        Labels      job=node,cluster=aks-dev
+        LineFormat  json
