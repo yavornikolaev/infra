@@ -61,6 +61,9 @@ loki:
 
   grafanaAgentOperator:
     enabled: false
+    crds:
+      create: false
+      enabled: false
 
   chunksCache:
     enabled: false
