@@ -1,0 +1,36 @@
+# Minimal Fluent Bit to send Kubernetes logs to Loki
+
+backend:
+  type: loki
+
+loki:
+  host: loki.logging.svc.cluster.local
+  port: 3100
+  # LogQL labels
+  labels:
+    job: fluent-bit
+    cluster: aks-dev
+
+serviceMonitor:
+  enabled: false
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# Reduce noise on small clusters
+filter:
+  enabled: true
+  kubernetes:
+    enabled: true
+
+extraOutputs: |
+  # Drop kube-system logs to save resources (optional)
+  [FILTER]
+      Name    grep
+      Match   kube.*
+      Exclude namespace_name kube-system

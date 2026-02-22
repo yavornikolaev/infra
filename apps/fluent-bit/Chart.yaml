@@ -1,0 +1,10 @@
+apiVersion: v2
+name: fluent-bit-wrapper
+description: Wrapper chart to deploy Fluent Bit with repo-owned values.
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: fluent-bit
+    repository: https://fluent.github.io/helm-charts
+    version: ">= 0.0.0"

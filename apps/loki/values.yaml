@@ -1,0 +1,33 @@
+loki:
+  auth_enabled: false
+
+  commonConfig:
+    replication_factor: 1
+
+  storage:
+    type: filesystem
+
+  persistence:
+    enabled: true
+    size: 5Gi
+
+  limits_config:
+    retention_period: 24h
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+
+# Disable components we don't need for a tiny cluster
+loki-canary:
+  enabled: false
+
+chunksCache:
+  enabled: false
+
+resultsCache:
+  enabled: false
