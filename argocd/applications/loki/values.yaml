@@ -53,7 +53,7 @@ loki:
 
   monitoring:
     dashboards:
-      enabled: false
+      enabled: true
     rules:
       enabled: false
     serviceMonitor:
