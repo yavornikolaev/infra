@@ -8,29 +8,63 @@ module "azure_network" {
   tags        = local.tags
 }
 
-module "azure_vm" {
-  source = "../../../modules/azure_vm"
+#module "azure_vm" {
+#  source = "../../../modules/azure_vm"
+#
+#  name                = "test"
+#  location            = local.location
+#  resource_group_name = module.azure_network.resource_group_name
+#  subnet_id           = module.azure_network.subnet_id
+#
+#  vm_size        = "Standard_D2als_v7"
+#  admin_username = "ubuntu"
+#  ssh_public_key = file(pathexpand("~/YavorVM_key.pem.pub"))
+#
+#  os_disk_size_gb   = 30
+#  enable_public_ip  = true
+#  create_nsg        = true
+#  allow_http        = true
+#  ssh_source_cidrs  = ["0.0.0.0/0"]
+#  http_source_cidrs = ["0.0.0.0/0"]
+#
+#  image_publisher = "Canonical"
+#  image_offer     = "ubuntu-24_04-lts"
+#  image_sku       = "server"
+#  image_version   = "latest"
+#
+#  tags = local.tags
+#}
 
-  name                = "test"
+module "azure_aks" {
+  source = "../../../modules/azure_aks"
+
+  name                = "${local.name_prefix}-aks"
   location            = local.location
   resource_group_name = module.azure_network.resource_group_name
+  dns_prefix          = "${local.name_prefix}-aks"
   subnet_id           = module.azure_network.subnet_id
 
-  vm_size        = "Standard_D2als_v7"
-  admin_username = "ubuntu"
-  ssh_public_key = file(pathexpand("~/YavorVM_key.pem.pub"))
+  kubernetes_version = "1.33.6"
 
-  os_disk_size_gb   = 30
-  enable_public_ip  = true
-  create_nsg        = true
-  allow_http        = true
-  ssh_source_cidrs  = ["0.0.0.0/0"]
-  http_source_cidrs = ["0.0.0.0/0"]
+  node_vm_size         = "Standard_D2als_v7"
+  node_count           = 1
+  node_min_count       = 1
+  node_max_count       = 3
+  node_os_disk_size_gb = 30
 
-  image_publisher = "Canonical"
-  image_offer     = "ubuntu-24_04-lts"
-  image_sku       = "server"
-  image_version   = "latest"
+  node_pools = [
+    {
+      name                = "devnodepool"
+      vm_size             = "Standard_D2als_v7"
+      node_count          = 1
+      min_count           = 1
+      max_count           = 3
+      os_disk_size_gb     = 30
+      mode                = "User"
+      enable_auto_scaling = true
+      vnet_subnet_id      = module.azure_network.subnet_id
+    }
+  ]
 
   tags = local.tags
 }
