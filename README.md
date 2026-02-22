@@ -6,12 +6,14 @@ This README covers:
 - How to work locally with Terraform (init / plan / apply)
 - How the GitHub Actions workflow performs automated planning for pull requests
 - Next steps to integrate with Ansible and Jenkins
+- GitOps apps and observability stack deployed via Argo CD
 
 ## Repository layout
 - `envs/` — environment-specific folders (`dev`, `prod`) with backend and environment configuration.
 - `modules/` — reusable Terraform modules (vpc, ec2, eks, iam, sg, etc.).
 - `.github/workflows/ci-cd.yaml` — GitHub Actions workflow that runs `terraform plan` on PRs and `terraform apply` on merge.
 - `.terraform/` — provider binaries and lock files (not normally edited manually).
+- `argocd/` — GitOps applications and Helm wrapper charts (monitoring/logging, Fluent Bit, Loki, etc.).
 
 > Important: Never commit secrets (AWS keys, passwords) to the repository. Use GitHub Secrets and IAM roles for CI.
 
@@ -121,9 +123,27 @@ Security note: Use short-lived IAM credentials (STS assume-role) or Jenkins cred
 
 ---
 
+## GitOps and Observability (Argo CD)
+
+This repo also manages a small GitOps layer for Kubernetes apps under `argocd/`:
+- **kube-prometheus-stack** (Prometheus + Grafana) with Grafana persistence and Recreate strategy for RWO PVCs.
+- **Loki** (single-binary, filesystem storage) for log aggregation.
+- **Fluent Bit** for log shipping to Loki.
+- **Grafana provisioning** for Loki datasource.
+- **Loki dashboards** (Grafana dashboards ConfigMaps) enabled by the Loki chart.
+
+### App structure
+- `argocd/argo-apps.yaml` — root app that discovers and syncs child apps.
+- `argocd/applications/*` — per-app folders with `argocd-application.yaml`, `values.yaml`, and wrapper `Chart.yaml`.
+
+### Notes
+- Loki uses `X-Scope-OrgID: 1` via the Grafana datasource provisioning.
+- Fluent Bit outputs are configured to send logs to Loki (not Elasticsearch).
+
+---
+
 ## Next steps
 - Add an `apply` workflow with GitHub Environment manual approval
 - Add an example Ansible playbook and a GitHub Actions job that runs it after `apply`
 - Provide a sample Jenkinsfile demonstrating plan -> apply -> ansible
-
 
