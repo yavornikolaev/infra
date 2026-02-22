@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "../../modules/vpc"
+  source = "../../../modules/vpc"
 
   name     = local.env
   vpc_cidr = "10.10.0.0/16"
@@ -13,14 +13,14 @@ module "vpc" {
 }
 
 module "ec2_iam" {
-  source = "../../modules/iam"
+  source = "../../../modules/iam"
 
   role_name = "${local.env}-ec2-ssm-role"
   tags      = local.tags
 }
 
 module "ec2_sg" {
-  source = "../../modules/sg"
+  source = "../../../modules/sg"
 
   name   = "${local.env}-ec2"
   vpc_id = module.vpc.vpc_id
@@ -46,7 +46,7 @@ module "ec2_sg" {
 }
 
 module "ec2" {
-  source                = "../../modules/ec2"
+  source                = "../../../modules/ec2"
   name_prefix           = "${local.env}-ec2"
   instance_names        = ["1"]
   instance_type         = "t2.micro"
@@ -62,7 +62,7 @@ module "ec2" {
 }
 
 module "eks" {
-  source = "../../modules/eks"
+  source = "../../../modules/eks"
   name   = "eks-dev"
 
 
