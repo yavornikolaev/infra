@@ -1,6 +1,6 @@
-# Infrastructure-as-Code (IaC) for a Production-Grade Cloud Platform
+# Infrastructure-as-Code (IaC) for a Production-Grade AKS Platform
 
-This repository contains Terraform configurations and a CI/CD pipeline for managing AWS infrastructure. The project is organized into reusable modules and environments (`dev`, `prod`). The pipeline automates planning (`terraform plan`), review, and application (`terraform apply`) of infrastructure changes.
+This repository contains Terraform configurations and a CI/CD pipeline for managing Azure (AKS) infrastructure. The project is organized into reusable modules and environments (`dev`, `prod`). The pipeline automates planning (`terraform plan`), review, and application (`terraform apply`) of infrastructure changes.
 
 This README covers:
 - How to work locally with Terraform (init / plan / apply)
@@ -10,7 +10,7 @@ This README covers:
 
 ## Repository layout
 - `envs/` — environment-specific folders (`dev`, `prod`) with backend and environment configuration.
-- `modules/` — reusable Terraform modules (vpc, ec2, eks, iam, sg, etc.).
+- `modules/` — reusable Terraform modules for Azure resources (rg, vnet, aks, iam, etc.).
 - `.github/workflows/ci-cd.yaml` — GitHub Actions workflow that runs `terraform plan` on PRs and `terraform apply` on merge.
 - `.terraform/` — provider binaries and lock files (not normally edited manually).
 - `argocd/` — GitOps applications and Helm wrapper charts (monitoring/logging, Fluent Bit, Loki, etc.).
@@ -30,20 +30,17 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 ```
 
-2. Configure AWS credentials locally:
+2. Configure Azure credentials locally:
 
 ```bash
-aws configure
-# or export environment variables
-export AWS_ACCESS_KEY_ID=...
-export AWS_SECRET_ACCESS_KEY=...
-export AWS_REGION=eu-central-1
+az login
+az account set --subscription <SUBSCRIPTION_ID>
 ```
 
 3. Initialize and plan for an environment (example: `dev`):
 
 ```bash
-cd envs/dev
+cd envs/dev/azure
 terraform init -input=false
 terraform validate
 terraform plan -out=tf.plan
@@ -55,7 +52,7 @@ terraform plan -out=tf.plan
 terraform apply -input=false tf.plan
 ```
 
-> Note: Use a remote backend (S3 + DynamoDB) for state storage and locking in team/production environments. Backend config lives in `envs/*/backend.tf`.
+> Note: Use a remote backend (Azure Storage + state locking) for state storage and locking in team/production environments. Backend config lives in `envs/*/backend.tf`.
 
 ---
 
@@ -63,7 +60,7 @@ terraform apply -input=false tf.plan
 
 The workflow runs when a Pull Request touches `*.tf` or `*.tfvars`. Primary steps:
 - Checkout the repository
-- Configure AWS credentials (assume-role) via `aws-actions/configure-aws-credentials`
+- Configure Azure credentials (service principal or OIDC)
 - Setup Terraform using `hashicorp/setup-terraform`
 - `terraform init`, `terraform validate`, and `terraform plan`; save the plan as an artifact
 - Convert the plan to plain text (`terraform show -no-color`) and publish it to workflow outputs
@@ -146,4 +143,3 @@ This repo also manages a small GitOps layer for Kubernetes apps under `argocd/`:
 - Add an `apply` workflow with GitHub Environment manual approval
 - Add an example Ansible playbook and a GitHub Actions job that runs it after `apply`
 - Provide a sample Jenkinsfile demonstrating plan -> apply -> ansible
-
