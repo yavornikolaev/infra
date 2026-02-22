@@ -12,6 +12,7 @@ kube-prometheus-stack:
     persistence:
       enabled: true
       size: 2Gi
+    adminPassword: "admin"
 
   prometheus:
     enabled: true
