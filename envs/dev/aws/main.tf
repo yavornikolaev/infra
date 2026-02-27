@@ -19,10 +19,10 @@ module "ec2_iam" {
   tags      = local.tags
 }
 
-module "ec2_sg" {
+module "ec2_public_sg" {
   source = "../../../modules/sg"
 
-  name   = "${local.env}-ec2"
+  name   = "${local.env}-ec2-public"
   vpc_id = module.vpc.vpc_id
 
   ingress_rules = [
@@ -45,20 +45,52 @@ module "ec2_sg" {
   tags = local.tags
 }
 
-module "ec2" {
+module "ec2_private_sg" {
+  source = "../../../modules/sg"
+
+  name   = "${local.env}-ec2-private"
+  vpc_id = module.vpc.vpc_id
+
+  ingress_rules = [
+    {
+      from_port                 = 22
+      to_port                   = 22
+      protocol                  = "tcp"
+      source_security_group_ids = [module.ec2_public_sg.security_group_id]
+      description               = "SSH from public instance SG"
+    }
+  ]
+
+  tags = local.tags
+}
+
+module "ec2_public" {
   source                = "../../../modules/ec2"
   name_prefix           = "${local.env}-ec2"
-  instance_names        = ["1"]
+  instance_names        = ["some-test"]
   instance_type         = "t2.micro"
   instance_profile_name = module.ec2_iam.instance_profile_name
   subnet_id             = module.vpc.public_subnet_ids[0]
-  security_group_ids    = [module.ec2_sg.security_group_id]
+  security_group_ids    = [module.ec2_public_sg.security_group_id]
   key_name              = "devops_key"
   root_volume_size      = 8
-  
-  user_data = fileexists(local.user_data_path) ? file(local.user_data_path) : null
+  user_data             = fileexists(local.user_data_path) ? file(local.user_data_path) : null
+  tags                  = local.tags
+}
 
-  tags = local.tags
+module "ec2_private" {
+  source                = "../../../modules/ec2"
+  name_prefix           = "${local.env}-ec2"
+  instance_names        = ["vpn"]
+  instance_type         = "t2.micro"
+  instance_profile_name = module.ec2_iam.instance_profile_name
+  subnet_id             = module.vpc.private_subnet_ids[0]
+  associate_public_ip   = false
+  security_group_ids    = [module.ec2_private_sg.security_group_id]
+  key_name              = "devops_key"
+  root_volume_size      = 8
+  user_data             = fileexists(local.user_data_path) ? file(local.user_data_path) : null
+  tags                  = local.tags
 }
 
 module "eks" {
@@ -96,3 +128,4 @@ module "eks" {
     }
   }
 }
+
