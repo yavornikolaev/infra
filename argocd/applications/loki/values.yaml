@@ -6,11 +6,10 @@ loki:
     replicas: 1
     resources:
       requests:
-        cpu: 100m
-        memory: 256Mi
+        cpu: 50m
+        memory: 128Mi
       limits:
-        cpu: 300m
-        memory: 512Mi
+        memory: 256Mi
     persistence:
       enabled: true
       size: 5Gi
