@@ -4,3 +4,5 @@ ingress-nginx:
     replicaCount: 1
     service:
       type: LoadBalancer
+      annotations:
+        service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
