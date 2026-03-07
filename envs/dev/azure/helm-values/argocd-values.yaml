@@ -14,6 +14,9 @@ controller:
       memory: 256Mi
     limits:
       memory: 512Mi
+  extraArgs:
+    - --status-processors=5
+    - --operation-processors=2
 
 repoServer:
   resources:
@@ -22,6 +25,15 @@ repoServer:
       memory: 128Mi
     limits:
       memory: 256Mi
+
+dex:
+  enabled: false
+
+notifications:
+  enabled: false
+
+applicationSet:
+  enabled: false
 
 configs:
   secret:
