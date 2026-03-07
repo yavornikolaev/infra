@@ -1,0 +1,6 @@
+# Values are passed to the "ingress-nginx" dependency chart.
+ingress-nginx:
+  controller:
+    replicaCount: 1
+    service:
+      type: LoadBalancer

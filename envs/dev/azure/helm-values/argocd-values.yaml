@@ -1,0 +1,15 @@
+# Argo CD values overrides for training/portfolio
+server:
+  extraArgs:
+    - --insecure
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hostname: argocd.local
+
+configs:
+  secret:
+    # Replace with a bcrypt hash. Example: htpasswd -nbBC 10 "" "password" | tr -d ':\\n' | sed 's/^\\$2[aby]/$2a/'
+    # or python3 - <<'PY' from passlib.hash import bcrypt print(bcrypt.using(rounds=10).hash("password")) PY
+    argocdServerAdminPassword: "$2b$10$/hVuc4rjfF1gyjy8wgYbpOCX6RvKsIrqA9sZmTbLK68r.oz6AqD1a"
+    argocdServerAdminPasswordMtime: "2026-03-07T00:00:00Z"
