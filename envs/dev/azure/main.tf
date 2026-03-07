@@ -75,6 +75,25 @@ module "argocd" {
   values_file = "${path.module}/helm-values/argocd-values.yaml"
 }
 
+module "postgres" {
+  source = "../../../modules/azure_postgres_flexible"
+
+  name                = local.db_name
+  location            = local.db_location
+  resource_group_name = module.azure_network.resource_group_name
+  database_name       = "appdb"
+  admin_username      = local.db_admin_username
+  postgres_version    = local.db_postgres_ver
+  sku_name            = local.db_sku_name
+  storage_gb          = local.db_storage_gb
+  availability_zone   = local.db_availability_z
+  backup_retention_days = local.db_backup_ret_days
+  geo_redundant_backup  = local.db_geo_backup
+  allowed_ips         = local.db_allowed_ips
+
+  tags = local.tags
+}
+
 resource "local_file" "kubeconfig" {
   filename = "${path.module}/kubeconfig.yaml"
   content  = module.azure_aks.kube_config_raw
