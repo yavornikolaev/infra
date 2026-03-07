@@ -5,7 +5,7 @@ server:
   ingress:
     enabled: true
     ingressClassName: nginx
-    hostname: argocd.local
+    hostname: argocd.20.23.219.143.nip.io
 
 controller:
   resources:

@@ -12,6 +12,12 @@ kube-prometheus-stack:
       enabled: true
       size: 2Gi
     adminPassword: "admin"
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - grafana.20.23.219.143.nip.io
+      path: /
     resources:
       requests:
         cpu: 50m
@@ -32,6 +38,14 @@ kube-prometheus-stack:
 
   prometheus:
     enabled: true
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - prometheus.20.23.219.143.nip.io
+      paths:
+        - /
+      pathType: Prefix
     prometheusSpec:
       retention: 6h
       resources:
