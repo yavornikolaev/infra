@@ -10,10 +10,10 @@ server:
 controller:
   resources:
     requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
+      cpu: 250m
       memory: 512Mi
+    limits:
+      memory: 1Gi
   extraArgs:
     - --status-processors=5
     - --operation-processors=2

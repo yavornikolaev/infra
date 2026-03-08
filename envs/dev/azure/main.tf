@@ -54,7 +54,7 @@ module "azure_aks" {
 
   node_pools = [
     {
-      name                = "devnodepool"
+      name                = "devnodepool"  
       vm_size             = "Standard_D2als_v7"
       node_count          = 1
       min_count           = 1
@@ -65,6 +65,17 @@ module "azure_aks" {
       vnet_subnet_id      = module.azure_network.subnet_id
     }
   ]
+ 
+  maintenance_window_auto_upgrade = {
+   frequency  = "Weekly"
+   interval   = 1
+   duration   = 4
+   day_of_week = "Sunday"
+   start_time = "01:00"
+   utc_offset = "+02:00"
+  }
+
+
 
   tags = local.tags
 }
